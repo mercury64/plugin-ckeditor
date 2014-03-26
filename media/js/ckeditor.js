@@ -1,9 +1,24 @@
 cms.plugins.ckeditor = {};
 
-
 // Switch on tinymce handler
 cms.plugins.ckeditor.switchOn_handler = function( textarea_id, params ) {
-	var local_params = {};
+	var local_params = {
+		toolbarGroups: [
+			{ name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
+			{ name: 'editing',     groups: [ 'find', 'selection', 'spellchecker' ] },
+			{ name: 'links' },
+			{ name: 'insert' },
+			{ name: 'forms' },
+			{ name: 'tools' },
+			{ name: 'document',	   groups: [ 'mode', 'document', 'doctools' ] },
+			{ name: 'others' },
+			{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+			{ name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
+			{ name: 'styles' },
+			{ name: 'colors' },
+			{ name: 'about' }
+		]
+	};
 	
 	params = $.extend(local_params, params);
 	
@@ -11,7 +26,21 @@ cms.plugins.ckeditor.switchOn_handler = function( textarea_id, params ) {
 	if(instance)
 		cms.plugins.ckeditor.switchOff_handler(instance, textarea_id);
 	
-	return CKEDITOR.replace( textarea_id );
+	editor = CKEDITOR.replace( textarea_id, params );
+	
+	editor.addCommand( 'filemanagerOpen', {
+		exec: function( editor ) {
+			cms.filemanager.open(editor.name);
+        }} 
+	);
+	
+	editor.ui.addButton( 'source', {
+		label: 'File manager',
+		command: 'filemanagerOpen',
+		toolbar: 'insert'
+	});
+	
+	return editor;
 };
 
 // Switch off tinymce handler
